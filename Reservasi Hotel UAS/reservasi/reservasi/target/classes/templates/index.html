@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistem Reservasi Hotel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding-bottom: 50px; font-family: sans-serif; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); background-color: rgba(255, 255, 255, 0.95); }
+        .bg-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .bg-gradient-dark { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; }
+        .info-board { background: linear-gradient(to right, #11998e, #38ef7d); color: white; border-radius: 12px; padding: 15px 20px; display: inline-block; margin-bottom: 2rem; }
+        .info-board.full { background: linear-gradient(to right, #cb2d3e, #ef473a); }
+        .btn-custom { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold"><i class="fa-solid fa-hotel text-primary me-2"></i>Sistem Reservasi Hotel</h1>
+            <div th:classappend="${sisaKamar <= 0} ? 'full' : ''" class="info-board">
+                <span class="fs-5 fw-bold"><i class="fa-solid fa-door-open me-2"></i>Sisa Kamar Hari Ini: <span th:text="${sisaKamar}">5</span></span>
+            </div>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm">
+            <strong th:text="${errorMessage}"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-primary p-3"><h5 class="mb-0">Form Reservasi</h5></div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/simpan}" th:object="${reservasiBaru}" method="POST">
+                            <input type="hidden" th:field="*{id}" />
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold small">NAMA TAMU</label>
+                                <input type="text" th:field="*{namaTamu}" class="form-control" required placeholder="Contoh: Budi">
+                            </div>
+                            <div class="mb-3">
+                                <label class="fw-bold small">TIPE KAMAR</label>
+                                <select th:field="*{tipeKamar}" class="form-select" required>
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Standard Room">Standard Room</option>
+                                    <option value="Deluxe Room">Deluxe Room</option>
+                                    <option value="Suite Room">Suite Room</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="fw-bold small">CHECK-IN</label>
+                                <input type="date" th:field="*{tanggalCheckIn}" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="fw-bold small">CHECK-OUT</label>
+                                <input type="date" th:field="*{tanggalCheckOut}" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-custom w-100 py-2"><i class="fa-regular fa-calendar-check me-2"></i>Simpan</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-dark p-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Daftar Reservasi</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">ID</th><th>Nama</th><th>Tipe</th><th>In</th><th>Out</th><th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="res : ${daftarReservasi}">
+                                    <td class="ps-4" th:text="'#' + ${res.id}"></td>
+                                    <td th:text="${res.namaTamu}"></td>
+                                    <td th:text="${res.tipeKamar}"></td>
+                                    <td th:text="${res.tanggalCheckIn}" class="text-success"></td>
+                                    <td th:text="${res.tanggalCheckOut}" class="text-danger"></td>
+                                    <td>
+                                        <a th:href="@{/edit/{id}(id=${res.id})}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
+                                        <a th:href="@{/hapus/{id}(id=${res.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Yakin hapus?')"><i class="fa-solid fa-trash"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
